@@ -25,7 +25,7 @@ export default function App() {
         setUserPos([lat, lng])
         setStatus(t.fetching)
         try {
-          const results = await fetchSpots(lat, lng)
+          const results = await fetchSpots(lat, lng, lang)
           setSpots(results)
           setStatus(t.done(results.length))
         } catch {

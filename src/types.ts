@@ -1,3 +1,5 @@
+import type { WikiSummary } from './utils/wikipedia'
+
 export type Lang = 'en' | 'ja'
 
 export interface OsmElement {
@@ -16,4 +18,5 @@ export interface Spot {
   name: string
   score: number
   tags: Record<string, string>
+  wiki: WikiSummary & { thumbnail: NonNullable<WikiSummary['thumbnail']> }
 }

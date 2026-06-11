@@ -1,7 +1,8 @@
-import type { OsmElement, Spot } from '../types'
+import type { OsmElement, Spot, Lang } from '../types'
 import { calcScore } from './score'
+import { fetchWikiSummary } from './wikipedia'
 
-export async function fetchSpots(lat: number, lng: number): Promise<Spot[]> {
+export async function fetchSpots(lat: number, lng: number, lang: Lang): Promise<Spot[]> {
   const r = 500
   const query = `[out:json][timeout:15];
 (
@@ -20,7 +21,7 @@ out center;`
   if (!res.ok) throw new Error('Overpass API error')
   const data: { elements: OsmElement[] } = await res.json()
 
-  return data.elements.flatMap((el) => {
+  const candidates = data.elements.flatMap((el) => {
     const lat = el.lat ?? el.center?.lat
     const lng = el.lon ?? el.center?.lon
     if (lat == null || lng == null) return []
@@ -30,7 +31,19 @@ out center;`
     if (score < 4) return []
 
     const name = tags.name ?? tags['name:en'] ?? tags['name:ja'] ?? ''
+    if (!name) return []
 
     return [{ id: el.id, lat, lng, name, score, tags }]
   })
+
+  // Wikipedia に写真付きの記事があるスポットのみ残す
+  const withPhotos = await Promise.all(
+    candidates.map(async (spot) => {
+      const wiki = await fetchWikiSummary(spot.name, lang)
+      if (!wiki?.thumbnail) return null
+      return { ...spot, wiki: wiki as Spot['wiki'] }
+    })
+  )
+
+  return withPhotos.filter((spot): spot is Spot => spot !== null)
 }
