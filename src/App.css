@@ -1,0 +1,85 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Georgia', serif;
+  background: #FAF6F0;
+  color: #3a3028;
+}
+
+.app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: #FAF6F0;
+  border-bottom: 1px solid #e0d8cc;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-size: 1.1rem;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 6px;
+}
+
+.lang-btn {
+  background: none;
+  border: 1px solid #c8bfb0;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  color: #6b5f52;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lang-btn.active,
+.lang-btn:hover {
+  background: #7BAE7F;
+  color: #fff;
+  border-color: #7BAE7F;
+}
+
+.footer {
+  background: #FAF6F0;
+  border-top: 1px solid #e0d8cc;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.find-btn {
+  flex: 1;
+  background: #7BAE7F;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.find-btn:hover { background: #5f9464; }
+.find-btn:disabled { background: #b0c8b2; cursor: default; }
+
+.status {
+  font-size: 0.8rem;
+  color: #8a7a6a;
+  min-width: 100px;
+  text-align: right;
+}
