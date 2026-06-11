@@ -1,11 +1,8 @@
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap, useMapEvents } from 'react-leaflet'
-import { useEffect } from 'react'
-import L from 'leaflet'
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Spot, Lang } from '../types'
 import { QUIET_MARKER } from '../utils/score'
 import SpotPopup from './SpotPopup'
-import { i18n } from '../i18n'
 
 interface FlyToProps {
   center: [number, number]
@@ -14,30 +11,6 @@ interface FlyToProps {
 function FlyTo({ center }: FlyToProps) {
   const map = useMap()
   map.flyTo(center, 16)
-  return null
-}
-
-interface LegendProps {
-  lang: Lang
-}
-
-function Legend({ lang }: LegendProps) {
-  const map = useMapEvents({})
-  const t = i18n[lang]
-
-  useEffect(() => {
-    const control = new L.Control({ position: 'bottomleft' })
-    control.onAdd = () => {
-      const div = L.DomUtil.create('div')
-      div.style.cssText = 'background:#FAF6F0;border:1px solid #e0d8cc;border-radius:6px;padding:8px 10px;font-size:0.75rem;line-height:1.8;font-family:Georgia,serif;'
-      const dot = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5a9e60;margin-right:5px;vertical-align:middle;"></span>`
-      div.innerHTML = `${dot}${t.legend_quiet}`
-      return div
-    }
-    control.addTo(map)
-    return () => { control.remove() }
-  }, [map, lang])
-
   return null
 }
 
@@ -60,7 +33,6 @@ export default function PeaceMap({ spots, userPos, lang }: Props) {
         subdomains="abcd"
         maxZoom={19}
       />
-      <Legend lang={lang} />
 
       {userPos && (
         <>

@@ -8,7 +8,6 @@ export const i18n = {
     done: (n: number) => `${n} spots found`,
     error_geo: 'Location unavailable.',
     error_api: 'Could not fetch data.',
-    legend_quiet: 'Quiet / recommended',
   },
   ja: {
     btn: '📍 近くの静かな場所を探す',
@@ -17,7 +16,6 @@ export const i18n = {
     done: (n: number) => `${n} 件見つかりました`,
     error_geo: '位置情報を取得できませんでした。',
     error_api: 'データを取得できませんでした。',
-    legend_quiet: '静か・おすすめ',
   },
 } satisfies Record<Lang, object>
 

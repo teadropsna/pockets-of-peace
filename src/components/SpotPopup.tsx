@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import type { Spot, Lang } from '../types'
 import { getPlaceInfo } from '../utils/placeLabel'
 import { fetchWikiSummary, type WikiSummary } from '../utils/wikipedia'
+import { fetchPlaceName } from '../utils/nominatim'
 
 interface Props {
   spot: Spot
@@ -12,17 +13,39 @@ type Status = 'idle' | 'loading' | 'done' | 'fallback'
 
 export default function SpotPopup({ spot, lang }: Props) {
   const [wiki, setWiki] = useState<WikiSummary | null>(null)
+  const [placeName, setPlaceName] = useState<string | null>(spot.name || null)
   const [status, setStatus] = useState<Status>('idle')
   const place = getPlaceInfo(spot.tags)
 
   useEffect(() => {
-    if (!spot.name) { setStatus('fallback'); return }
+    let cancelled = false
     setStatus('loading')
-    fetchWikiSummary(spot.name, lang).then((result) => {
-      setWiki(result)
-      setStatus(result ? 'done' : 'fallback')
-    })
-  }, [spot.name, lang])
+
+    async function load() {
+      let name = spot.name
+
+      if (!name) {
+        const found = await fetchPlaceName(spot.lat, spot.lng, lang)
+        if (cancelled) return
+        if (found) {
+          name = found
+          setPlaceName(found)
+        }
+      }
+
+      if (name) {
+        const result = await fetchWikiSummary(name, lang)
+        if (cancelled) return
+        setWiki(result)
+        setStatus(result ? 'done' : 'fallback')
+      } else {
+        setStatus('fallback')
+      }
+    }
+
+    load()
+    return () => { cancelled = true }
+  }, [spot.name, spot.lat, spot.lng, lang])
 
   return (
     <div style={{ width: '220px', fontFamily: 'Georgia, serif' }}>
@@ -53,9 +76,9 @@ export default function SpotPopup({ spot, lang }: Props) {
         <div style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '4px' }}>
           {wiki.title}
         </div>
-      ) : spot.name ? (
+      ) : placeName ? (
         <div style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '4px' }}>
-          {spot.name}
+          {placeName}
         </div>
       ) : null}
 
@@ -86,11 +109,6 @@ export default function SpotPopup({ spot, lang }: Props) {
           Wikipedia で詳しく →
         </a>
       )}
-
-      {/* Peace Score */}
-      <div style={{ marginTop: '8px', fontSize: '0.7rem', color: '#bbb', borderTop: '1px solid #eee', paddingTop: '6px' }}>
-        Peace Score: {spot.score} / 7
-      </div>
     </div>
   )
 }
